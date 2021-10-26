@@ -20,7 +20,7 @@
   },
   "license": "Apache-2.0",
   "author": "Alex Gusev <alex@flancer64.com>",
-  "main": "./src/Index.mjs",
+  "main": "src/Back/Index.mjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/teqfw/test.git"
@@ -29,7 +29,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@teqfw/core": "*"
+    "@teqfw/db": "*"
   },
   "devDependencies": {
     "mocha": "*"
