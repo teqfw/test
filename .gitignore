@@ -1,0 +1,7 @@
+/**/*.sqlite
+/**/local.json
+/.idea/
+/jsdoc/
+/node_modules/
+/package-lock.json
+/tmp/

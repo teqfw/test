@@ -1,0 +1,37 @@
+{
+  "name": "@teqfw/test",
+  "version": "0.1.0",
+  "description": "TeqFW: core plugin for tests.",
+  "keywords": [
+    "ecmascript 2015",
+    "es6+",
+    "pwa",
+    "spa",
+    "teqfw",
+    "tequila framework",
+    "test",
+    "web applications",
+    "web push api",
+    "web-apps"
+  ],
+  "homepage": "https://github.com/teqfw/test#readme",
+  "bugs": {
+    "url": "https://github.com/teqfw/test/issues"
+  },
+  "license": "Apache-2.0",
+  "author": "Alex Gusev <alex@flancer64.com>",
+  "main": "./src/Index.mjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teqfw/test.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@teqfw/core": "*"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
+}
