@@ -86,18 +86,22 @@ const localCfg = await (async function (cfg, container) {
      */
     function generateDefault() {
         const connDef = {
-            "database": "teqfw_db_test",
-            "host": "127.0.0.1",
-            "password": "PasswordToConnectToTeqFWDb",
-            "user": "teqfw"
+            database: 'teqfw_db_test',
+            host: '127.0.0.1',
+            password: 'PasswordToConnectToTeqFWDb',
+            user: 'teqfw'
         };
         const connSqlite = {
-            "filename": join(cfg.pathToRoot, "./test/data/testDb.sqlite"),
+            filename: join(cfg.pathToRoot, './test/data/testDb.sqlite'),
         };
         return {
-            mariadb: {client: "mysql2", connection: connDef},
-            pg: {client: "pg", connection: connDef},
-            sqlite: {client: "sqlite3", connection: connSqlite}
+            mariadb: {client: 'mysql2', connection: connDef},
+            pg: {client: 'pg', connection: connDef},
+            sqlite: {
+                client: 'sqlite3',
+                connection: connSqlite,
+                useNullAsDefault: true,
+            }
         };
     }
 
