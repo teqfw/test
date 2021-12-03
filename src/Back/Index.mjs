@@ -38,8 +38,6 @@ const container = await (async function (cfg) {
     const registry = await scan.exec(cfg.pathToRoot);
     /** @type {TeqFw_Core_Back_Defaults} */
     const DEF = await res.get('TeqFw_Core_Back_Defaults$');
-    /** @type {typeof TeqFw_Di_Shared_Api_Enum_Area} */
-    const AREA = await res.get('TeqFw_Di_Shared_Api_Enum_Area#');
     for (const item of registry.items()) {
         /** @type {TeqFw_Di_Back_Api_Dto_Plugin_Desc} */
         const desc = item.teqfw[DEF.MOD_DI.NAME];
@@ -55,8 +53,13 @@ const container = await (async function (cfg) {
         if (Array.isArray(Object.keys(desc?.replace)))
             for (const orig of Object.keys(desc.replace)) {
                 const one = desc.replace[orig];
-                if ((one.area === AREA.BACK) || (one.area === AREA.SHARED))
-                    res.addModuleReplacement(orig, one.ns);
+                if (typeof one === 'string') {
+                    res.addModuleReplacement(orig, one);
+                } else if (typeof one === 'object') {
+                    if (typeof one[DEF.AREA] === 'string') {
+                        res.addModuleReplacement(orig, one[DEF.AREA]);
+                    }
+                }
             }
     }
     return res;
