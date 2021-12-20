@@ -1,6 +1,6 @@
 {
   "name": "@teqfw/test",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TeqFW: core plugin for tests.",
   "keywords": [
     "ecmascript 2015",
