@@ -33,8 +33,8 @@ const container = await (async function (cfg) {
     res.addSourceMapping('TeqFw_Core', srcTeqFwCore, true, 'mjs');
     res.addSourceMapping('TeqFw_Di', srcTeqFwDi, true, 'mjs');
 
-    /** @type {TeqFw_Core_Back_Scan_Plugin} */
-    const scan = await res.get('TeqFw_Core_Back_Scan_Plugin$');
+    /** @type {TeqFw_Core_Back_App_Scan_Plugin} */
+    const scan = await res.get('TeqFw_Core_Back_App_Scan_Plugin$');
     const registry = await scan.exec(cfg.pathToRoot);
     /** @type {TeqFw_Core_Back_Defaults} */
     const DEF = await res.get('TeqFw_Core_Back_Defaults$');
