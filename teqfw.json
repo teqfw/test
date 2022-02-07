@@ -1,8 +1,5 @@
 {
-  "@teqfw/di": {
-    "autoload": {
-      "ns": "TeqFw_Test",
-      "path": "./src"
-    }
-  }
+  "publicKey": "MvEyGsVIOxCrPrLcijxvHnWPtY+jS7sMgp+q5akMams=",
+  "secretKey": "A6xO8bbkqCNwJCzNYj5zJVbsGUi1MtUEzlCwisTp24Q=",
+  "uuid": "7cece1ea-225c-406b-aad7-4b2ef41c1bc8"
 }
