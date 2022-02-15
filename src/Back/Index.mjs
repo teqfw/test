@@ -80,7 +80,7 @@ const RDBMS = {
  * @typedef {Object}
  */
 const localCfg = await (async function (cfg, container) {
-    // DEFINE INNER FUNCTIONS
+    // ENCLOSED FUNCS
     /**
      * Default connection parameters to PostgreSQL/MariaDB/MySQL/SQLite database.
      * Override these params in local configuration (./test/data/cfg/local.json).
@@ -108,7 +108,7 @@ const localCfg = await (async function (cfg, container) {
         };
     }
 
-    // MAIN FUNCTIONALITY
+    // MAIN
     const filename = join(cfg.pathToRoot, './test/data/cfg/local.json');
     /** @type {TeqFw_Core_Back_Util.readJson|function} */
     const readJson = await container.get('TeqFw_Core_Back_Util#readJson');
