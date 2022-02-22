@@ -80,7 +80,7 @@ const RDBMS = {
  * @typedef {Object}
  */
 const localCfg = await (async function (cfg, container) {
-    // ENCLOSED FUNCS
+    // FUNCS
     /**
      * Default connection parameters to PostgreSQL/MariaDB/MySQL/SQLite database.
      * Override these params in local configuration (./test/data/cfg/local.json).
