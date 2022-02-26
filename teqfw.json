@@ -1,5 +1,11 @@
 {
-  "publicKey": "MvEyGsVIOxCrPrLcijxvHnWPtY+jS7sMgp+q5akMams=",
-  "secretKey": "A6xO8bbkqCNwJCzNYj5zJVbsGUi1MtUEzlCwisTp24Q=",
-  "uuid": "7cece1ea-225c-406b-aad7-4b2ef41c1bc8"
+  "data": {"dateRead": "2022-02-26T04:31:18.991Z", "messageUuid": "4a820e23-ec00-40fe-8bf8-522af7f1d706"},
+  "meta": {
+    "backUUID": "799da79c-5134-4fd8-9a59-de5eb5c730ed",
+    "frontUUID": "ad94b412-ec14-438c-b7c5-dca8d9f37f76",
+    "expiration": "2022-02-27T04:31:31.569Z",
+    "name": "Fl32_Dup_Shared_Event_Back_Msg_Send_Read",
+    "published": "2022-02-26T04:31:31.569Z",
+    "uuid": "27acb0b8-eab5-4fd9-aa8a-b719976ee73a"
+  }
 }
