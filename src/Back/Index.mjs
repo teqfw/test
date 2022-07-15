@@ -119,23 +119,25 @@ const localCfg = await (async function (cfg, container) {
 /**
  * Use this function in tests to init DB connections.
  *
+ * @param {string} db
+ * @param {TeqFw_Db_Back_RDb_Connect} [conn]
  * @return {Promise<TeqFw_Db_Back_RDb_Connect>}
  * @memberOf TeqFw_Test_Back
  */
-const dbConnect = async function (db = null) {
+const dbConnect = async function (db = null, conn) {
     /** @type {TeqFw_Db_Back_RDb_Connect} */
-    const conn = await container.get('TeqFw_Db_Back_RDb_Connect$$'); // instance
+    const curConn = conn ?? await container.get('TeqFw_Db_Back_RDb_Connect$$'); // instance
     switch (db) {
         case RDBMS.MARIADB:
-            await conn.init(localCfg.mariadb);
+            await curConn.init(localCfg.mariadb);
             break;
         case RDBMS.POSTGRESQL:
-            await conn.init(localCfg.pg);
+            await curConn.init(localCfg.pg);
             break;
         default:
-            await conn.init(localCfg.sqlite);
+            await curConn.init(localCfg.sqlite);
     }
-    return conn;
+    return curConn;
 }
 
 export {
