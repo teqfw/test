@@ -1,5 +1,9 @@
 # @teqfw/user: releases
 
+# 0.3.0
+
+* Core refactoring reflection.
+
 # 0.2.0
 
 * SQLite support.
