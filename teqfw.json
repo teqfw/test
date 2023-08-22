@@ -2,7 +2,8 @@
   "@teqfw/di": {
     "autoload": {
       "ns": "TeqFw_Test",
-      "path": "./src"
+      "path": "./src",
+      "ext": "mjs"
     }
   }
 }

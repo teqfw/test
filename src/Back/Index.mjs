@@ -33,14 +33,14 @@ const container = await (async function (cfg) {
     res.addSourceMapping('TeqFw_Core', srcTeqFwCore, true, 'mjs');
     res.addSourceMapping('TeqFw_Di', srcTeqFwDi, true, 'mjs');
 
-    /** @type {TeqFw_Core_Back_Mod_Init_Plugin} */
-    const scan = await res.get('TeqFw_Core_Back_Mod_Init_Plugin$');
+    /** @type {TeqFw_Core_Back_App_Plugin_Loader} */
+    const scan = await res.get('TeqFw_Core_Back_App_Plugin_Loader$');
     const registry = await scan.exec(cfg.pathToRoot);
     /** @type {TeqFw_Core_Back_Defaults} */
     const DEF = await res.get('TeqFw_Core_Back_Defaults$');
     for (const item of registry.items()) {
         /** @type {TeqFw_Di_Back_Api_Dto_Plugin_Desc} */
-        const desc = item.teqfw[DEF.MOD_DI.NAME];
+        const desc = item.teqfw[DEF.SHARED.NAME_DI];
         /** @type {TeqFw_Di_Shared_Api_Dto_Plugin_Desc_Autoload} */
         const auto = desc.autoload;
         const ns = auto.ns;
@@ -49,7 +49,7 @@ const container = await (async function (cfg) {
     }
     for (const item of registry.getItemsByLevels()) {
         /** @type {TeqFw_Di_Back_Api_Dto_Plugin_Desc} */
-        const desc = item.teqfw[DEF.MOD_DI.NAME];
+        const desc = item.teqfw[DEF.SHARED.NAME_DI];
         if (Array.isArray(Object.keys(desc?.replace)))
             for (const orig of Object.keys(desc.replace)) {
                 const one = desc.replace[orig];
