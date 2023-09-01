@@ -3,8 +3,10 @@
  * @namespace TeqFw_Test_Back
  */
 import Config from './Dto/Config.mjs';
-import Container from "@teqfw/di";
+import Container from '@teqfw/di';
 import {dirname, join} from 'path';
+import SPHERE from '@teqfw/core/src/Shared/Enum/Sphere.mjs';
+import Replace from '@teqfw/core/src/Shared/App/Di/PreProcessor/Replace.mjs';
 
 /**
  * Compose configuration object for test environment.
@@ -23,45 +25,80 @@ const config = (() => {
  * @type {TeqFw_Di_Api_Container}
  */
 const container = await (async function (cfg) {
+    // FUNCS
+
+    /**
+     * Extract autoload data from `@teqfw/di` nodes of descriptors and initialize resolver.
+     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items
+     * @param {TeqFw_Core_Back_Defaults} DEF
+     */
+    function initAutoload(container, items, DEF) {
+        const resolver = container.getResolver();
+        for (const item of items) {
+            /** @type {TeqFw_Core_Back_Plugin_Dto_Desc_Di.Dto} */
+            const desc = item.teqfw[DEF.SHARED.NAME_DI];
+            /** @type {TeqFw_Core_Back_Plugin_Dto_Desc_Di_Autoload.Dto} */
+            const auto = desc.autoload;
+            const ext = auto.ext ?? 'js';
+            const ns = auto.ns;
+            if (ns) {
+                const path = join(item.path, auto.path);
+                resolver.addNamespaceRoot(ns, path, ext);
+            }
+        }
+    }
+
+    /**
+     * Extract data from ordered `@teqfw/di` nodes and initialize replacement for objectKeys.
+     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items - ordered items
+     * @param {TeqFw_Core_Back_Defaults} DEF
+     */
+    function initReplaces(container, items, DEF) {
+        const replaceChunk = new Replace();
+        for (const item of items) {
+            /** @type {TeqFw_Core_Back_Plugin_Dto_Desc_Di.Dto} */
+            const desc = item.teqfw[DEF.SHARED.NAME_DI];
+            if (Array.isArray(desc?.replaces))
+                for (const one of desc.replaces) {
+                    if (
+                        (one.sphere === SPHERE.BACK) ||
+                        (one.sphere === SPHERE.SHARED)
+                    )
+                        replaceChunk.add(one.from, one.to);
+                }
+        }
+        const preProcessor = container.getPreProcessor();
+        preProcessor.addChunk(replaceChunk);
+    }
+
+    // MAIN
     /** @type {TeqFw_Di_Api_Container} */
     const res = new Container();
     const pathNode = join(cfg.pathToRoot, 'node_modules');
-    const srcTeqFwDi = join(pathNode, '@teqfw/di/src');
-    const srcTeqFwCore = join(pathNode, '@teqfw/core/src');
+    const pathDi = join(pathNode, '@teqfw', 'di', 'src');
+    const pathCore = join(pathNode, '@teqfw', 'core', 'src');
 
-    // add backend sources to map
-    res.addSourceMapping('TeqFw_Core', srcTeqFwCore, true, 'mjs');
-    res.addSourceMapping('TeqFw_Di', srcTeqFwDi, true, 'mjs');
+    // add path mapping for @teqfw/core to the DI resolver
+    const resolver = res.getResolver();
+    resolver.addNamespaceRoot('TeqFw_Di_', pathDi, 'js');
+    resolver.addNamespaceRoot('TeqFw_Core_', pathCore, 'mjs');
+    // setup parser for the legacy code
+    const chunkOld = await res.get('TeqFw_Core_Shared_App_Di_Parser_Chunk$');
+    const parser = res.getParser();
+    parser.addChunk(chunkOld);
 
+
+    // add autoload & replaces
+    /** @type {TeqFw_Core_Back_Defaults} */
+    const DEF = await res.get('TeqFw_Core_Back_Defaults$');
     /** @type {TeqFw_Core_Back_App_Plugin_Loader} */
     const scan = await res.get('TeqFw_Core_Back_App_Plugin_Loader$');
     const registry = await scan.exec(cfg.pathToRoot);
-    /** @type {TeqFw_Core_Back_Defaults} */
-    const DEF = await res.get('TeqFw_Core_Back_Defaults$');
-    for (const item of registry.items()) {
-        /** @type {TeqFw_Di_Back_Api_Dto_Plugin_Desc} */
-        const desc = item.teqfw[DEF.SHARED.NAME_DI];
-        /** @type {TeqFw_Di_Shared_Api_Dto_Plugin_Desc_Autoload} */
-        const auto = desc.autoload;
-        const ns = auto.ns;
-        const path = join(item.path, auto.path);
-        res.addSourceMapping(ns, path, true);
-    }
-    for (const item of registry.getItemsByLevels()) {
-        /** @type {TeqFw_Di_Back_Api_Dto_Plugin_Desc} */
-        const desc = item.teqfw[DEF.SHARED.NAME_DI];
-        if (Array.isArray(Object.keys(desc?.replace)))
-            for (const orig of Object.keys(desc.replace)) {
-                const one = desc.replace[orig];
-                if (typeof one === 'string') {
-                    res.addModuleReplacement(orig, one);
-                } else if (typeof one === 'object') {
-                    if (typeof one[DEF.AREA] === 'string') {
-                        res.addModuleReplacement(orig, one[DEF.AREA]);
-                    }
-                }
-            }
-    }
+    initAutoload(res, registry.items(), DEF);
+    initReplaces(res, registry.getItemsByLevels(), DEF);
+
     return res;
 })(config);
 
