@@ -20,10 +20,10 @@ const config = (() => {
 
 /**
  * Create and setup DI container (once per all imports).
- * @type {TeqFw_Di_Container}
+ * @type {TeqFw_Di_Api_Container}
  */
 const container = await (async function (cfg) {
-    /** @type {TeqFw_Di_Container} */
+    /** @type {TeqFw_Di_Api_Container} */
     const res = new Container();
     const pathNode = join(cfg.pathToRoot, 'node_modules');
     const srcTeqFwDi = join(pathNode, '@teqfw/di/src');
