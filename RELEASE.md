@@ -1,5 +1,9 @@
 # @teqfw/user: releases
 
+## 0.20.1
+
+* Use pre- and post-processors in the test env initialization.
+
 ## 0.20.0
 
 * These changes are related to the new architecture of the `@teqfw/di` package.
