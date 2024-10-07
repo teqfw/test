@@ -148,7 +148,7 @@ const localCfg = await (async function (cfg, container) {
     // MAIN
     const filename = join(cfg.pathToRoot, './test/data/cfg/local.json');
     /** @type {TeqFw_Core_Back_Util.readJson|function} */
-    const readJson = await container.get('TeqFw_Core_Back_Util#readJson');
+    const readJson = await container.get('TeqFw_Core_Back_Util.readJson');
     const local = readJson(filename);
     return local ?? generateDefault();
 })(config, container);

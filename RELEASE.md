@@ -1,5 +1,9 @@
 # @teqfw/user: releases
 
+## 0.21.0
+
+* Use a new depId scheme from @teqfw/di.
+
 ## 0.20.1
 
 * Use pre- and post-processors in the test env initialization.
