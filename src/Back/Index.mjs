@@ -122,7 +122,7 @@ const localCfg = await (async function (cfg, container) {
      * Default connection parameters to PostgreSQL/MariaDB/MySQL/SQLite database.
      * Override these params in local configuration (./test/data/cfg/local.json).
      *
-     * @return {Object}
+     * @returns {Object}
      */
     function generateDefault() {
         const connDef = {
@@ -158,7 +158,7 @@ const localCfg = await (async function (cfg, container) {
  *
  * @param {string} db
  * @param {TeqFw_Db_Back_RDb_Connect} [conn]
- * @return {Promise<TeqFw_Db_Back_RDb_Connect>}
+ * @returns {Promise<TeqFw_Db_Back_RDb_Connect>}
  * @memberOf TeqFw_Test_Back
  */
 const dbConnect = async function (db = null, conn) {
