@@ -1,5 +1,9 @@
 # @teqfw/user: releases
 
+## 0.22.0
+
+* `better-sqlite3` has been added as a supported database type.
+
 ## 0.21.0
 
 * Use a new depId scheme from @teqfw/di.

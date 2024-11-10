@@ -110,6 +110,7 @@ const RDBMS = {
     MARIADB: 'mariadb',
     POSTGRESQL: 'pg',
     SQLITE: 'sqlite',
+    SQLITE_BETTER: 'sqlite_better',
 };
 
 /**
@@ -132,13 +133,18 @@ const localCfg = await (async function (cfg, container) {
             user: 'teqfw'
         };
         const connSqlite = {
-            filename: join(cfg.pathToRoot, './test/data/testDb.sqlite'),
+            filename: join(cfg.pathToRoot, './test/data/db.sqlite3'),
         };
         return {
             mariadb: {client: 'mysql2', connection: connDef},
             pg: {client: 'pg', connection: connDef},
             sqlite: {
                 client: 'sqlite3',
+                connection: connSqlite,
+                useNullAsDefault: true,
+            },
+            sqliteBetter: {
+                client: 'better-sqlite3',
                 connection: connSqlite,
                 useNullAsDefault: true,
             }
@@ -171,15 +177,18 @@ const dbConnect = async function (db = null, conn) {
         case RDBMS.POSTGRESQL:
             await curConn.init(localCfg.pg);
             break;
-        default:
+        case RDBMS.SQLITE:
             await curConn.init(localCfg.sqlite);
+            break;
+        default:
+            await curConn.init(localCfg.sqliteBetter);
     }
     return curConn;
-}
+};
 
 export {
     config,
     container,
     dbConnect,
     RDBMS,
-}
+};
