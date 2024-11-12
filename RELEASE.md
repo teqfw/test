@@ -1,8 +1,9 @@
-# @teqfw/user: releases
+# @teqfw/test: Releases
 
-## 0.22.0
+## 0.22.0 - TODO
 
-* `better-sqlite3` has been added as a supported database type.
+* Added support for `better-sqlite3` as a database type.
+* Added proxy and logger post-processors.
 
 ## 0.21.0
 

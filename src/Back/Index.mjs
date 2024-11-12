@@ -4,9 +4,12 @@
  */
 import Config from './Dto/Config.mjs';
 import Container from '@teqfw/di';
+import TeqFw_Di_Defs$ from '@teqfw/di/src/Defs.js';
 import {dirname, join} from 'path';
 import SPHERE from '@teqfw/core/src/Shared/Enum/Sphere.mjs';
 import Replace from '@teqfw/core/src/Shared/App/Di/PreProcessor/Replace.mjs';
+import Proxy from '@teqfw/core/src/Shared/App/Di/PostProcessor/Proxy.mjs';
+import Logger from '@teqfw/core/src/Shared/App/Di/PostProcessor/Logger.mjs';
 
 /**
  * Compose configuration object for test environment.
@@ -73,6 +76,45 @@ const container = await (async function (cfg) {
         preProcessor.addChunk(replaceChunk);
     }
 
+    /**
+     * Extract data from ordered `@teqfw/di` nodes and initialize proxies for objectKeys.
+     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items - ordered items
+     * @param {TeqFw_Core_Back_Defaults} DEF
+     */
+    function initProxy(container, items, DEF) {
+        const chunkProxy = new Proxy({container});
+        for (const item of items) {
+            /** @type {TeqFw_Core_Back_Plugin_Dto_Desc_Di.Dto} */
+            const desc = item.teqfw[DEF.SHARED.NAME_DI];
+            if (Array.isArray(desc?.proxy))
+                for (const one of desc.proxy) {
+                    if (
+                        (one.sphere === SPHERE.BACK) ||
+                        (one.sphere === SPHERE.SHARED)
+                    )
+                        chunkProxy.map(one.from, one.to);
+                }
+        }
+        const postProcessor = container.getPostProcessor();
+        postProcessor.addChunk(chunkProxy);
+    }
+
+    /**
+     * Extract data from ordered `@teqfw/di` nodes and initialize replacement for objectKeys.
+     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Core_Back_Defaults} DEF
+     */
+    async function initLogger(container, DEF) {
+        const chunkLogger = new Logger({
+                container,
+                TeqFw_Di_Defs$
+            }
+        );
+        const postProcessor = container.getPostProcessor();
+        postProcessor.addChunk(chunkLogger);
+    }
+
     // MAIN
     /** @type {TeqFw_Di_Api_Container} */
     const res = new Container();
@@ -97,7 +139,10 @@ const container = await (async function (cfg) {
     const scan = await res.get('TeqFw_Core_Back_App_Plugin_Loader$');
     const registry = await scan.exec(cfg.pathToRoot);
     initAutoload(res, registry.items(), DEF);
-    initReplaces(res, registry.getItemsByLevels(), DEF);
+    const ordered = registry.getItemsByLevels();
+    initReplaces(res, ordered, DEF);
+    initProxy(res, ordered, DEF);
+    initLogger(res);
 
     return res;
 })(config);
