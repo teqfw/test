@@ -1,17 +1,15 @@
-# teqfw/test
+# @teqfw/test
 
-|CAUTION: TeqFW is an unstable, fast-growing project w/o backward compatibility. Use it at your own risk.|
-|---|
+`@teqfw/test` is an npm package providing a test environment for TeqFW plugins and projects. It includes a DI container,
+configuration setup, and utilities for managing plugin dependencies and database connections.
 
-Base plugin to tests TeqFW apps.
+## Key Features
 
-## Usage in test scripts
+- Dependency Injection (DI) container pre-configured for TeqFW.
+- Automated plugin autoloading and namespace mapping.
+- Database support: MariaDB, PostgreSQL, SQLite, Better-SQLite.
+- Extensible environment for efficient plugin testing.
 
-```js
-import {config, container, dbConnect, RDBMS} from '@teqfw/test';
+## License
 
-const path = config.pathToRoot;
-const obj = await container.get('depId');
-/** @type {TeqFw_Db_Back_RDb_Connect} */
-const conn = await dbConnect(RDBMS.POSTGRESQL);
-```
+This project is licensed under the [Apache License 2.0](LICENSE).

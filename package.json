@@ -1,18 +1,14 @@
 {
   "name": "@teqfw/test",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "TeqFW: core plugin for tests.",
   "keywords": [
     "ecmascript 2015",
     "es6+",
-    "pwa",
-    "spa",
     "teqfw",
     "tequila framework",
     "test",
-    "web applications",
-    "web push api",
-    "web-apps"
+    "web applications"
   ],
   "homepage": "https://github.com/teqfw/test#readme",
   "bugs": {
