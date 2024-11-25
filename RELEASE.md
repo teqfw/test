@@ -1,5 +1,10 @@
 # @teqfw/test: Releases
 
+## 0.23.0 - TODO
+
+* Fix errors in logger initialization.
+* Add dependencies into `package.json`
+
 ## 0.22.0
 
 * Added support for `better-sqlite3` as a database type.
