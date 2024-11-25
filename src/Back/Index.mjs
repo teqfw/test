@@ -1,43 +1,48 @@
 /**
- * This es6-module creates test environment for TeqFW plugins and projects.
- * @namespace TeqFw_Test_Back
+ * This ES6 module creates a test environment for TeqFW plugins and projects.
+ * @namespace TeqFw_Test_Back_Index
  */
 import Config from './Dto/Config.mjs';
 import Container from '@teqfw/di';
-import TeqFw_Di_Defs$ from '@teqfw/di/src/Defs.js';
 import {dirname, join} from 'path';
-import SPHERE from '@teqfw/core/src/Shared/Enum/Sphere.mjs';
-import Replace from '@teqfw/core/src/Shared/App/Di/PreProcessor/Replace.mjs';
-import Proxy from '@teqfw/core/src/Shared/App/Di/PostProcessor/Proxy.mjs';
-import Logger from '@teqfw/core/src/Shared/App/Di/PostProcessor/Logger.mjs';
+
+// VARS
+/**
+ * The registry for the TeqFW plugins of the project.
+ * @type {TeqFw_Core_Back_Api_Plugin_Registry}
+ */
+let PLUGINS;
 
 /**
- * Compose configuration object for test environment.
+ * Config DTO with the path to the project root.
  * @type {TeqFw_Test_Back_Dto_Config}
  */
-const config = (() => {
-    const res = new Config();
-    const url = new URL(import.meta.url);
-    const pathScript = dirname(url.pathname);
-    res.pathToRoot = join(pathScript, '../../../../../');
-    return res;
-})();
-
+const config = initConfig();
 /**
- * Create and setup DI container (once per all imports).
+ * Create and set up the DI container (once for all imports).
  * @type {TeqFw_Di_Api_Container}
  */
-const container = await (async function (cfg) {
+const container = await createContainer();
+
+// FUNCS
+
+/**
+ * Factory function to create and configure the DI container.
+ * @return {Promise<TeqFw_Di_Api_Container>}
+ */
+async function createContainer() {
     // FUNCS
 
     /**
-     * Extract autoload data from `@teqfw/di` nodes of descriptors and initialize resolver.
+     * Extract autoload data from `@teqfw/di` nodes of TeqFW descriptors and initialize resolver.
      * @param {TeqFw_Di_Api_Container} container
      * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items
-     * @param {TeqFw_Core_Back_Defaults} DEF
      */
-    function initAutoload(container, items, DEF) {
+    async function initNamespaces(container, items) {
+        /** @type {TeqFw_Di_Container_Resolver} */
         const resolver = container.getResolver();
+        /** @type {TeqFw_Core_Back_Defaults} */
+        const DEF = await container.get('TeqFw_Core_Back_Defaults$');
         for (const item of items) {
             /** @type {TeqFw_Core_Back_Plugin_Dto_Desc_Di.Dto} */
             const desc = item.teqfw[DEF.SHARED.NAME_DI];
@@ -53,13 +58,38 @@ const container = await (async function (cfg) {
     }
 
     /**
-     * Extract data from ordered `@teqfw/di` nodes and initialize replacement for objectKeys.
+     * Initialize the legacy parser.
      * @param {TeqFw_Di_Api_Container} container
-     * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items - ordered items
-     * @param {TeqFw_Core_Back_Defaults} DEF
      */
-    function initReplaces(container, items, DEF) {
-        const replaceChunk = new Replace();
+    async function initParserLegacy(container) {
+        const legacyChunk = await container.get('TeqFw_Core_Shared_App_Di_Parser_Legacy$');
+        const parser = container.getParser();
+        parser.addChunk(legacyChunk);
+    }
+
+    /**
+     * Add the logger chunk for the post processor.
+     * @param {TeqFw_Di_Api_Container} container
+     */
+    async function initPostLogger(container) {
+        const loggerChunk = await container.get('TeqFw_Core_Shared_App_Di_PostProcessor_Logger$');
+        const postProcessor = container.getPostProcessor();
+        postProcessor.addChunk(loggerChunk);
+    }
+
+
+    /**
+     * Initialize replacements in the pre-processor.
+     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items
+     */
+    async function initPreReplaces(container, items) {
+        /** @type {TeqFw_Core_Back_Defaults} */
+        const DEF = await container.get('TeqFw_Core_Back_Defaults$');
+        /** @type {typeof TeqFw_Core_Shared_Enum_Sphere} */
+        const SPHERE = await container.get('TeqFw_Core_Shared_Enum_Sphere.default');
+        /** @type {TeqFw_Core_Shared_App_Di_PreProcessor_Replace} */
+        const replaceChunk = await container.get('TeqFw_Core_Shared_App_Di_PreProcessor_Replace$');
         for (const item of items) {
             /** @type {TeqFw_Core_Back_Plugin_Dto_Desc_Di.Dto} */
             const desc = item.teqfw[DEF.SHARED.NAME_DI];
@@ -72,18 +102,21 @@ const container = await (async function (cfg) {
                         replaceChunk.add(one.from, one.to);
                 }
         }
-        const preProcessor = container.getPreProcessor();
-        preProcessor.addChunk(replaceChunk);
+        container.getPreProcessor().addChunk(replaceChunk);
     }
 
     /**
-     * Extract data from ordered `@teqfw/di` nodes and initialize proxies for objectKeys.
+     * Initialize proxies in the post-processor.
      * @param {TeqFw_Di_Api_Container} container
-     * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items - ordered items
-     * @param {TeqFw_Core_Back_Defaults} DEF
+     * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items
      */
-    function initProxy(container, items, DEF) {
-        const chunkProxy = new Proxy({container});
+    async function initPostProxy(container, items) {
+        /** @type {TeqFw_Core_Back_Defaults} */
+        const DEF = await container.get('TeqFw_Core_Back_Defaults$');
+        /** @type {typeof TeqFw_Core_Shared_Enum_Sphere} */
+        const SPHERE = await container.get('TeqFw_Core_Shared_Enum_Sphere.default');
+        /** @type {TeqFw_Core_Shared_App_Di_PostProcessor_Proxy} */
+        const proxyChunk = await container.get('TeqFw_Core_Shared_App_Di_PostProcessor_Proxy$');
         for (const item of items) {
             /** @type {TeqFw_Core_Back_Plugin_Dto_Desc_Di.Dto} */
             const desc = item.teqfw[DEF.SHARED.NAME_DI];
@@ -93,63 +126,79 @@ const container = await (async function (cfg) {
                         (one.sphere === SPHERE.BACK) ||
                         (one.sphere === SPHERE.SHARED)
                     )
-                        chunkProxy.map(one.from, one.to);
+                        proxyChunk.map(one.from, one.to);
                 }
         }
-        const postProcessor = container.getPostProcessor();
-        postProcessor.addChunk(chunkProxy);
+        container.getPostProcessor().addChunk(proxyChunk);
     }
 
-    /**
-     * Extract data from ordered `@teqfw/di` nodes and initialize replacement for objectKeys.
-     * @param {TeqFw_Di_Api_Container} container
-     * @param {TeqFw_Core_Back_Defaults} DEF
-     */
-    async function initLogger(container, DEF) {
-        const chunkLogger = new Logger({
-                container,
-                TeqFw_Di_Defs$
-            }
-        );
-        const postProcessor = container.getPostProcessor();
-        postProcessor.addChunk(chunkLogger);
-    }
 
     // MAIN
-    /** @type {TeqFw_Di_Api_Container} */
-    const res = new Container();
-    const pathNode = join(cfg.pathToRoot, 'node_modules');
+    // set up paths to the main folders
+    const pathNode = join(config.pathToRoot, 'node_modules');
     const pathDi = join(pathNode, '@teqfw', 'di', 'src');
     const pathCore = join(pathNode, '@teqfw', 'core', 'src');
 
-    // add path mapping for @teqfw/core to the DI resolver
-    const resolver = res.getResolver();
+    // create the container and set up namespaces for @teqfw/di & @teqfw/core
+    /** @type {TeqFw_Di_Api_Container} */
+    const container = new Container();
+    const resolver = container.getResolver();
     resolver.addNamespaceRoot('TeqFw_Di_', pathDi, 'js');
     resolver.addNamespaceRoot('TeqFw_Core_', pathCore, 'mjs');
-    // setup parser for the legacy code
-    const chunkOld = await res.get('TeqFw_Core_Shared_App_Di_Parser_Legacy$');
-    const parser = res.getParser();
-    parser.addChunk(chunkOld);
 
+    // set up parser for old-style code
+    await initParserLegacy(container);
+    // Set up the logger chunk for post processor (add namespace to a logger instance).
+    await initPostLogger(container);
 
-    // add autoload & replaces
-    /** @type {TeqFw_Core_Back_Defaults} */
-    const DEF = await res.get('TeqFw_Core_Back_Defaults$');
-    /** @type {TeqFw_Core_Back_App_Plugin_Loader} */
-    const scan = await res.get('TeqFw_Core_Back_App_Plugin_Loader$');
-    const registry = await scan.exec(cfg.pathToRoot);
-    initAutoload(res, registry.items(), DEF);
-    const ordered = registry.getItemsByLevels();
-    initReplaces(res, ordered, DEF);
-    initProxy(res, ordered, DEF);
-    initLogger(res);
+    // get plugins registry
+    const registry = await loadPlugins(container, config);
+    const plugins = registry.items();
+    const pluginsOrdered = registry.getItemsByLevels();
 
+    // loop all plugins and set up namespaces and autoload
+    await initNamespaces(container, plugins);
+    // set up the namespaces replaces in preprocessor
+    await initPreReplaces(container, pluginsOrdered);
+    // set up proxy wrappers in postprocessor
+    await initPostProxy(container, pluginsOrdered);
+
+    return container;
+}
+
+/**
+ * Creates a configuration DTO for the test environment.
+ * Pins the project folder containing the `./node_modules/` subfolder.
+ *
+ * @return {TeqFw_Test_Back_Dto_Config}
+ */
+function initConfig() {
+    const res = new Config();
+    const scriptPath = dirname(new URL(import.meta.url).pathname);
+    res.pathToRoot = join(scriptPath, '..', '..', '..', '..', '..');
     return res;
-})(config);
+}
+
+/**
+ * Load the plugins registry.
+ * @param {TeqFw_Di_Api_Container} container
+ * @param {TeqFw_Test_Back_Dto_Config} cfgDto
+ * @return {Promise<TeqFw_Core_Back_Api_Plugin_Registry>}
+ */
+async function loadPlugins(container, cfgDto) {
+    if (!PLUGINS) {
+        /** @type {TeqFw_Core_Back_App_Plugin_Loader} */
+        const scan = await container.get('TeqFw_Core_Back_App_Plugin_Loader$');
+        PLUGINS = await scan.exec(cfgDto.pathToRoot);
+    }
+    return PLUGINS;
+}
+
+// MAIN
 
 /**
  * RDBMS types codifier.
- * @memberOf TeqFw_Test_Back
+ * @memberOf TeqFw_Test_Back_Index
  */
 const RDBMS = {
     MARIADB: 'mariadb',
@@ -159,7 +208,7 @@ const RDBMS = {
 };
 
 /**
- * Load local config (./test/data/cfg/local.json).
+ * Load the local configuration (./test/data/cfg/local.json).
  * @typedef {Object}
  */
 const localCfg = await (async function (cfg, container) {
@@ -205,35 +254,32 @@ const localCfg = await (async function (cfg, container) {
 })(config, container);
 
 /**
- * Use this function in tests to init DB connections.
- *
+ * Initialize DB connections for tests.
  * @param {string} db
  * @param {TeqFw_Db_Back_RDb_Connect} [conn]
- * @returns {Promise<TeqFw_Db_Back_RDb_Connect>}
- * @memberOf TeqFw_Test_Back
+ * @return {Promise<TeqFw_Db_Back_RDb_Connect>}
  */
-const dbConnect = async function (db = null, conn) {
-    /** @type {TeqFw_Db_Back_RDb_Connect} */
-    const curConn = conn ?? await container.get('TeqFw_Db_Back_RDb_Connect$$'); // instance
-    switch (db) {
-        case RDBMS.MARIADB:
-            await curConn.init(localCfg.mariadb);
-            break;
-        case RDBMS.POSTGRESQL:
-            await curConn.init(localCfg.pg);
-            break;
-        case RDBMS.SQLITE:
-            await curConn.init(localCfg.sqlite);
-            break;
-        default:
-            await curConn.init(localCfg.sqliteBetter);
-    }
+const dbConnect = async (db = RDBMS.SQLITE_BETTER, conn) => {
+    const connections = {
+        [RDBMS.MARIADB]: localCfg.mariadb,
+        [RDBMS.POSTGRESQL]: localCfg.pg,
+        [RDBMS.SQLITE]: localCfg.sqlite,
+        [RDBMS.SQLITE_BETTER]: localCfg.sqliteBetter,
+    };
+    const curConn = conn ?? await container.get('TeqFw_Db_Back_RDb_Connect$$');
+    await curConn.init(connections[db]);
     return curConn;
 };
 
 export {
-    config,
+    createContainer,
+    RDBMS,
+    /**
+     * Use `configDto`.
+     * @deprecated
+     */
+        config,
+    config as configDto,
     container,
     dbConnect,
-    RDBMS,
 };
