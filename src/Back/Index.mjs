@@ -190,6 +190,12 @@ async function loadPlugins(container, cfgDto) {
         /** @type {TeqFw_Core_Back_App_Plugin_Loader} */
         const scan = await container.get('TeqFw_Core_Back_App_Plugin_Loader$');
         PLUGINS = await scan.exec(cfgDto.pathToRoot);
+    } else {
+        /** @type {TeqFw_Core_Back_Api_Plugin_Registry} */
+        const reg = await container.get('TeqFw_Core_Back_Api_Plugin_Registry$');
+        for (const item of PLUGINS.items()) {
+            reg.set(item.name, item);
+        }
     }
     return PLUGINS;
 }
