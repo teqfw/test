@@ -1,9 +1,12 @@
 # @teqfw/test: Releases
 
-## 0.23.0 - TODO
+## 0.23.0 - Plugin Integration and DB Enhancements
 
-* Fix errors in logger initialization.
-* Add dependencies into `package.json`
+* Updated GPT actions to utilize the plugin architecture.
+* Added dependencies to `package.json` for smoother integration.
+* Enhanced database connection initialization for tests.
+* Improved logger initialization in the test environment.
+* Refined test environment setup for GPT user demo.
 
 ## 0.22.0
 
