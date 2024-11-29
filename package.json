@@ -1,6 +1,6 @@
 {
   "name": "@teqfw/test",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "description": "Provides a test environment for TeqFW plugins and projects, including a pre-configured DI container, database support, and plugin dependency management tools.",
   "keywords": [
     "ecmascript 2015",
