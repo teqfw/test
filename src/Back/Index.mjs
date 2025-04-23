@@ -20,7 +20,7 @@ let PLUGINS;
 const config = initConfig();
 /**
  * Create and set up the DI container (once for all imports).
- * @type {TeqFw_Di_Api_Container}
+ * @type {TeqFw_Di_Container}
  */
 const container = await createContainer();
 
@@ -28,14 +28,14 @@ const container = await createContainer();
 
 /**
  * Factory function to create and configure the DI container.
- * @return {Promise<TeqFw_Di_Api_Container>}
+ * @return {Promise<TeqFw_Di_Container>}
  */
 async function createContainer() {
     // FUNCS
 
     /**
      * Extract autoload data from `@teqfw/di` nodes of TeqFW descriptors and initialize resolver.
-     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Di_Container} container
      * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items
      */
     async function initNamespaces(container, items) {
@@ -59,7 +59,7 @@ async function createContainer() {
 
     /**
      * Initialize the legacy parser.
-     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Di_Container} container
      */
     async function initParserLegacy(container) {
         const legacyChunk = await container.get('TeqFw_Core_Shared_App_Di_Parser_Legacy$');
@@ -69,7 +69,7 @@ async function createContainer() {
 
     /**
      * Add the logger chunk for the post processor.
-     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Di_Container} container
      */
     async function initPostLogger(container) {
         const loggerChunk = await container.get('TeqFw_Core_Shared_App_Di_PostProcessor_Logger$');
@@ -80,7 +80,7 @@ async function createContainer() {
 
     /**
      * Initialize replacements in the pre-processor.
-     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Di_Container} container
      * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items
      */
     async function initPreReplaces(container, items) {
@@ -107,7 +107,7 @@ async function createContainer() {
 
     /**
      * Initialize proxies in the post-processor.
-     * @param {TeqFw_Di_Api_Container} container
+     * @param {TeqFw_Di_Container} container
      * @param {TeqFw_Core_Back_Api_Dto_Plugin_Registry_Item[]} items
      */
     async function initPostProxy(container, items) {
@@ -140,7 +140,7 @@ async function createContainer() {
     const pathCore = join(pathNode, '@teqfw', 'core', 'src');
 
     // create the container and set up namespaces for @teqfw/di & @teqfw/core
-    /** @type {TeqFw_Di_Api_Container} */
+    /** @type {TeqFw_Di_Container} */
     const container = new Container();
     const resolver = container.getResolver();
     resolver.addNamespaceRoot('TeqFw_Di_', pathDi, 'js');
@@ -181,7 +181,7 @@ function initConfig() {
 
 /**
  * Load the plugins registry.
- * @param {TeqFw_Di_Api_Container} container
+ * @param {TeqFw_Di_Container} container
  * @param {TeqFw_Test_Back_Dto_Config} cfgDto
  * @return {Promise<TeqFw_Core_Back_Api_Plugin_Registry>}
  */
