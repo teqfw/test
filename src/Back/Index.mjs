@@ -23,6 +23,7 @@ const config = initConfig();
  * @type {TeqFw_Di_Container}
  */
 const container = await createContainer();
+container.enableTestMode();
 
 // FUNCS
 
