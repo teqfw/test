@@ -1,7 +1,12 @@
 # @teqfw/test: Releases
 
-## 0.24.0 - TODO
+## 0.24.0 – Unified DI container types and test environment cleanup
 
+- Replaced legacy `TeqFw_Di_Api_Container` type with updated `TeqFw_Di_Container` across all internal JSDoc annotations
+  for consistency and alignment with DI implementation.
+- Updated test environment initialization to reflect consistent container handling in `Back/Index.mjs` and related
+  functions.
+ 
 ## 0.23.0 - Plugin Integration and DB Enhancements
 
 * Added dependencies to `package.json` for smoother integration.
